@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                             
                             context.read<AuthBloc>().add(
                               LoginRequested(
-                                _usernameController.text,
+                                _usernameController.text.toUpperCase(),
                                 _passwordController.text,
                               ),
                             );
