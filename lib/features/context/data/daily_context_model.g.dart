@@ -42,18 +42,28 @@ const DailyContextSchema = CollectionSchema(
       name: r'radius',
       type: IsarType.double,
     ),
-    r'shiftIn': PropertySchema(
+    r'serverClockIn': PropertySchema(
       id: 5,
+      name: r'serverClockIn',
+      type: IsarType.string,
+    ),
+    r'serverClockOut': PropertySchema(
+      id: 6,
+      name: r'serverClockOut',
+      type: IsarType.string,
+    ),
+    r'shiftIn': PropertySchema(
+      id: 7,
       name: r'shiftIn',
       type: IsarType.string,
     ),
     r'shiftName': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'shiftName',
       type: IsarType.string,
     ),
     r'shiftOut': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'shiftOut',
       type: IsarType.string,
     )
@@ -79,6 +89,18 @@ int _dailyContextEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.employeeName.length * 3;
+  {
+    final value = object.serverClockIn;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.serverClockOut;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.shiftIn.length * 3;
   bytesCount += 3 + object.shiftName.length * 3;
   bytesCount += 3 + object.shiftOut.length * 3;
@@ -96,9 +118,11 @@ void _dailyContextSerialize(
   writer.writeDateTime(offsets[2], object.date);
   writer.writeString(offsets[3], object.employeeName);
   writer.writeDouble(offsets[4], object.radius);
-  writer.writeString(offsets[5], object.shiftIn);
-  writer.writeString(offsets[6], object.shiftName);
-  writer.writeString(offsets[7], object.shiftOut);
+  writer.writeString(offsets[5], object.serverClockIn);
+  writer.writeString(offsets[6], object.serverClockOut);
+  writer.writeString(offsets[7], object.shiftIn);
+  writer.writeString(offsets[8], object.shiftName);
+  writer.writeString(offsets[9], object.shiftOut);
 }
 
 DailyContext _dailyContextDeserialize(
@@ -114,9 +138,11 @@ DailyContext _dailyContextDeserialize(
   object.employeeName = reader.readString(offsets[3]);
   object.id = id;
   object.radius = reader.readDouble(offsets[4]);
-  object.shiftIn = reader.readString(offsets[5]);
-  object.shiftName = reader.readString(offsets[6]);
-  object.shiftOut = reader.readString(offsets[7]);
+  object.serverClockIn = reader.readStringOrNull(offsets[5]);
+  object.serverClockOut = reader.readStringOrNull(offsets[6]);
+  object.shiftIn = reader.readString(offsets[7]);
+  object.shiftName = reader.readString(offsets[8]);
+  object.shiftOut = reader.readString(offsets[9]);
   return object;
 }
 
@@ -138,10 +164,14 @@ P _dailyContextDeserializeProp<P>(
     case 4:
       return (reader.readDouble(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -682,6 +712,314 @@ extension DailyContextQueryFilter
   }
 
   QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'serverClockIn',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'serverClockIn',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'serverClockIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'serverClockIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'serverClockIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'serverClockIn',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'serverClockIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'serverClockIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'serverClockIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'serverClockIn',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'serverClockIn',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockInIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'serverClockIn',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'serverClockOut',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'serverClockOut',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'serverClockOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'serverClockOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'serverClockOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'serverClockOut',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'serverClockOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'serverClockOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'serverClockOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'serverClockOut',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'serverClockOut',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      serverClockOutIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'serverClockOut',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
       shiftInEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1161,6 +1499,33 @@ extension DailyContextQuerySortBy
     });
   }
 
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByServerClockIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockIn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy>
+      sortByServerClockInDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockIn', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy>
+      sortByServerClockOut() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockOut', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy>
+      sortByServerClockOutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockOut', Sort.desc);
+    });
+  }
+
   QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftIn() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'shiftIn', Sort.asc);
@@ -1275,6 +1640,33 @@ extension DailyContextQuerySortThenBy
     });
   }
 
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByServerClockIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockIn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy>
+      thenByServerClockInDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockIn', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy>
+      thenByServerClockOut() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockOut', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy>
+      thenByServerClockOutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'serverClockOut', Sort.desc);
+    });
+  }
+
   QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftIn() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'shiftIn', Sort.asc);
@@ -1345,6 +1737,22 @@ extension DailyContextQueryWhereDistinct
     });
   }
 
+  QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByServerClockIn(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'serverClockIn',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByServerClockOut(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'serverClockOut',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByShiftIn(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1402,6 +1810,20 @@ extension DailyContextQueryProperty
   QueryBuilder<DailyContext, double, QQueryOperations> radiusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'radius');
+    });
+  }
+
+  QueryBuilder<DailyContext, String?, QQueryOperations>
+      serverClockInProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'serverClockIn');
+    });
+  }
+
+  QueryBuilder<DailyContext, String?, QQueryOperations>
+      serverClockOutProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'serverClockOut');
     });
   }
 

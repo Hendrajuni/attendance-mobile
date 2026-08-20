@@ -264,10 +264,13 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildDashboardContent(BuildContext context, ContextSuccess state) {
     bool hasOfflineData = _unsyncedCount > 0;
     
+    String displayClockIn = state.contextData.serverClockIn ?? _clockIn;
+    String displayClockOut = state.contextData.serverClockOut ?? _clockOut;
+    
     // Calculate Late Status
     bool isLate = false;
-    if (_clockIn != '--:--') {
-      if (_clockIn.compareTo(state.contextData.shiftIn) > 0) {
+    if (displayClockIn != '--:--' && state.contextData.shiftName != 'Tidak Ada Jadwal') {
+      if (displayClockIn.compareTo(state.contextData.shiftIn) > 0) {
         isLate = true;
       }
     }
@@ -291,13 +294,13 @@ class _DashboardPageState extends State<DashboardPage> {
       if (expectedHours <= 0) expectedHours = 8;
       expectedHoursStr = '${expectedHours}j';
       
-      if (_clockIn != '--:--') {
-        final inParts = _clockIn.split(':');
+      if (displayClockIn != '--:--') {
+        final inParts = displayClockIn.split(':');
         final inTime = DateTime(now.year, now.month, now.day, int.parse(inParts[0]), int.parse(inParts[1]));
         
         DateTime outTime;
-        if (_clockOut != '--:--') {
-          final outParts = _clockOut.split(':');
+        if (displayClockOut != '--:--') {
+          final outParts = displayClockOut.split(':');
           outTime = DateTime(now.year, now.month, now.day, int.parse(outParts[0]), int.parse(outParts[1]));
         } else {
           outTime = now;
@@ -437,15 +440,15 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 const Text('Clock In', style: TextStyle(color: Colors.grey, fontSize: 14)),
                                 const SizedBox(height: 4),
-                                Text(_clockIn, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+                                Text(displayClockIn, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
                                 const SizedBox(height: 4),
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: _clockIn == '--:--' ? Colors.grey.withOpacity(0.1) : (isLate ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2)),
+                                      color: displayClockIn == '--:--' ? Colors.grey.withOpacity(0.1) : (isLate ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2)),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: Text(_clockIn == '--:--' ? 'Belum Absen' : (isLate ? 'Telat' : 'Tercatat'), style: TextStyle(color: _clockIn == '--:--' ? Colors.grey : (isLate ? Colors.red : Colors.green), fontSize: 12, fontWeight: FontWeight.bold)),
+                                    child: Text(displayClockIn == '--:--' ? 'Belum Absen' : (isLate ? 'Telat' : 'Tercatat'), style: TextStyle(color: displayClockIn == '--:--' ? Colors.grey : (isLate ? Colors.red : Colors.green), fontSize: 12, fontWeight: FontWeight.bold)),
                                   ),
                               ],
                             ),
@@ -455,15 +458,15 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 const Text('Clock Out', style: TextStyle(color: Colors.grey, fontSize: 14)),
                                 const SizedBox(height: 4),
-                                Text(_clockOut, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+                                Text(displayClockOut, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
                                 const SizedBox(height: 4),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: displayClockOut == '--:--' ? Colors.grey.withOpacity(0.1) : Colors.green.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: const Text('Belum Absen', style: TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+                                  child: Text(displayClockOut == '--:--' ? 'Belum Absen' : 'Tercatat', style: TextStyle(color: displayClockOut == '--:--' ? Colors.grey : Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
                                 ),
                               ],
                             ),
@@ -542,6 +545,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     SnackBar(content: Text('Berhasil menyinkronkan ${syncState.count} data!'), backgroundColor: Colors.green),
                   );
                   _fetchLocalData(); // Refresh UI to show 0 unsynced
+                  context.read<ContextBloc>().add(FetchContextRequested()); // Force refresh context to get server logs
                 }
               },
               builder: (context, syncState) {

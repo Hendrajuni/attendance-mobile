@@ -28,6 +28,8 @@ class ContextRepository {
           ..shiftName = data['shift'] ?? 'Tidak Ada Jadwal'
           ..shiftIn = data['shift_in'] ?? '08:00'
           ..shiftOut = data['shift_out'] ?? '16:00'
+          ..serverClockIn = data['today_clock_in']
+          ..serverClockOut = data['today_clock_out']
           ..employeeName = data['name'] ?? 'Unknown';
 
         final isar = _localDbService.isar;

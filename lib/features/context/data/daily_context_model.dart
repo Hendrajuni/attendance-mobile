@@ -20,5 +20,9 @@ class DailyContext {
 
   late String shiftOut;
 
+  String? serverClockIn;
+
+  String? serverClockOut;
+
   late String employeeName;
 }
