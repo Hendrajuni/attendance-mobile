@@ -145,13 +145,13 @@ class _AttendancePageState extends State<AttendancePage> {
                       ElevatedButton(
                         onPressed: state is AttendanceLoading
                             ? null
-                            : () => _submitAttendance('IN'),
+                            : () => _submitAttendance('MASUK'),
                         child: const Text('Absen Masuk (IN)'),
                       ),
                       ElevatedButton(
                         onPressed: state is AttendanceLoading
                             ? null
-                            : () => _submitAttendance('OUT'),
+                            : () => _submitAttendance('PULANG'),
                         child: const Text('Absen Pulang (OUT)'),
                       ),
                     ],

@@ -42,9 +42,19 @@ const DailyContextSchema = CollectionSchema(
       name: r'radius',
       type: IsarType.double,
     ),
-    r'shiftName': PropertySchema(
+    r'shiftIn': PropertySchema(
       id: 5,
+      name: r'shiftIn',
+      type: IsarType.string,
+    ),
+    r'shiftName': PropertySchema(
+      id: 6,
       name: r'shiftName',
+      type: IsarType.string,
+    ),
+    r'shiftOut': PropertySchema(
+      id: 7,
+      name: r'shiftOut',
       type: IsarType.string,
     )
   },
@@ -69,7 +79,9 @@ int _dailyContextEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.employeeName.length * 3;
+  bytesCount += 3 + object.shiftIn.length * 3;
   bytesCount += 3 + object.shiftName.length * 3;
+  bytesCount += 3 + object.shiftOut.length * 3;
   return bytesCount;
 }
 
@@ -84,7 +96,9 @@ void _dailyContextSerialize(
   writer.writeDateTime(offsets[2], object.date);
   writer.writeString(offsets[3], object.employeeName);
   writer.writeDouble(offsets[4], object.radius);
-  writer.writeString(offsets[5], object.shiftName);
+  writer.writeString(offsets[5], object.shiftIn);
+  writer.writeString(offsets[6], object.shiftName);
+  writer.writeString(offsets[7], object.shiftOut);
 }
 
 DailyContext _dailyContextDeserialize(
@@ -100,7 +114,9 @@ DailyContext _dailyContextDeserialize(
   object.employeeName = reader.readString(offsets[3]);
   object.id = id;
   object.radius = reader.readDouble(offsets[4]);
-  object.shiftName = reader.readString(offsets[5]);
+  object.shiftIn = reader.readString(offsets[5]);
+  object.shiftName = reader.readString(offsets[6]);
+  object.shiftOut = reader.readString(offsets[7]);
   return object;
 }
 
@@ -122,6 +138,10 @@ P _dailyContextDeserializeProp<P>(
     case 4:
       return (reader.readDouble(offset)) as P;
     case 5:
+      return (reader.readString(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -662,6 +682,142 @@ extension DailyContextQueryFilter
   }
 
   QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shiftIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'shiftIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'shiftIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'shiftIn',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'shiftIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'shiftIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'shiftIn',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'shiftIn',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shiftIn',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftInIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'shiftIn',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
       shiftNameEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -796,6 +952,142 @@ extension DailyContextQueryFilter
       ));
     });
   }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shiftOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'shiftOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'shiftOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'shiftOut',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'shiftOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'shiftOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'shiftOut',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'shiftOut',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shiftOut',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      shiftOutIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'shiftOut',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension DailyContextQueryObject
@@ -869,6 +1161,18 @@ extension DailyContextQuerySortBy
     });
   }
 
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftIn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftInDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftIn', Sort.desc);
+    });
+  }
+
   QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'shiftName', Sort.asc);
@@ -878,6 +1182,18 @@ extension DailyContextQuerySortBy
   QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'shiftName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftOut() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftOut', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> sortByShiftOutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftOut', Sort.desc);
     });
   }
 }
@@ -959,6 +1275,18 @@ extension DailyContextQuerySortThenBy
     });
   }
 
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftIn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftInDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftIn', Sort.desc);
+    });
+  }
+
   QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'shiftName', Sort.asc);
@@ -968,6 +1296,18 @@ extension DailyContextQuerySortThenBy
   QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'shiftName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftOut() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftOut', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterSortBy> thenByShiftOutDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'shiftOut', Sort.desc);
     });
   }
 }
@@ -1005,10 +1345,24 @@ extension DailyContextQueryWhereDistinct
     });
   }
 
+  QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByShiftIn(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'shiftIn', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByShiftName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'shiftName', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByShiftOut(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'shiftOut', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1051,9 +1405,21 @@ extension DailyContextQueryProperty
     });
   }
 
+  QueryBuilder<DailyContext, String, QQueryOperations> shiftInProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'shiftIn');
+    });
+  }
+
   QueryBuilder<DailyContext, String, QQueryOperations> shiftNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'shiftName');
+    });
+  }
+
+  QueryBuilder<DailyContext, String, QQueryOperations> shiftOutProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'shiftOut');
     });
   }
 }

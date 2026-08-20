@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/context_bloc.dart';
@@ -27,12 +28,22 @@ class _DashboardPageState extends State<DashboardPage> {
   String _clockIn = '--:--';
   String _clockOut = '--:--';
   int _unsyncedCount = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _fetchLocalData();
     context.read<ContextBloc>().add(FetchContextRequested());
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> _fetchLocalData() async {
@@ -252,6 +263,61 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildDashboardContent(BuildContext context, ContextSuccess state) {
     bool hasOfflineData = _unsyncedCount > 0;
+    
+    // Calculate Late Status
+    bool isLate = false;
+    if (_clockIn != '--:--') {
+      if (_clockIn.compareTo(state.contextData.shiftIn) > 0) {
+        isLate = true;
+      }
+    }
+    
+    // Calculate Working Hours dynamically
+    String workingHoursStr = '0j 0m';
+    String expectedHoursStr = '8j';
+    double progress = 0.0;
+    
+    try {
+      final now = DateTime.now();
+      
+      // Target hours
+      final shiftInParts = state.contextData.shiftIn.split(':');
+      final shiftOutParts = state.contextData.shiftOut.split(':');
+      final sIn = DateTime(now.year, now.month, now.day, int.parse(shiftInParts[0]), int.parse(shiftInParts[1]));
+      final sOut = DateTime(now.year, now.month, now.day, int.parse(shiftOutParts[0]), int.parse(shiftOutParts[1]));
+      
+      final expectedDuration = sOut.difference(sIn);
+      int expectedHours = expectedDuration.inHours;
+      if (expectedHours <= 0) expectedHours = 8;
+      expectedHoursStr = '${expectedHours}j';
+      
+      if (_clockIn != '--:--') {
+        final inParts = _clockIn.split(':');
+        final inTime = DateTime(now.year, now.month, now.day, int.parse(inParts[0]), int.parse(inParts[1]));
+        
+        DateTime outTime;
+        if (_clockOut != '--:--') {
+          final outParts = _clockOut.split(':');
+          outTime = DateTime(now.year, now.month, now.day, int.parse(outParts[0]), int.parse(outParts[1]));
+        } else {
+          outTime = now;
+        }
+        
+        final duration = outTime.difference(inTime);
+        int hours = duration.inHours;
+        int minutes = duration.inMinutes.remainder(60);
+        
+        if (hours < 0) hours = 0;
+        if (minutes < 0) minutes = 0;
+        
+        workingHoursStr = '${hours}j ${minutes}m';
+        progress = duration.inMinutes / expectedDuration.inMinutes;
+        if (progress > 1.0) progress = 1.0;
+        if (progress < 0.0) progress = 0.0;
+      }
+    } catch (e) {
+      // Ignored
+    }
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -373,14 +439,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                 const SizedBox(height: 4),
                                 Text(_clockIn, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
                                 const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: _clockIn == '--:--' ? Colors.grey.withOpacity(0.1) : Colors.green.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: _clockIn == '--:--' ? Colors.grey.withOpacity(0.1) : (isLate ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2)),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(_clockIn == '--:--' ? 'Belum Absen' : (isLate ? 'Telat' : 'Tercatat'), style: TextStyle(color: _clockIn == '--:--' ? Colors.grey : (isLate ? Colors.red : Colors.green), fontSize: 12, fontWeight: FontWeight.bold)),
                                   ),
-                                  child: Text(_clockIn == '--:--' ? 'Belum Absen' : 'Tercatat', style: TextStyle(color: _clockIn == '--:--' ? Colors.grey : Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
-                                ),
                               ],
                             ),
                             // Clock Out
@@ -441,11 +507,11 @@ class _DashboardPageState extends State<DashboardPage> {
                           children: [
                             const Text('Jam Kerja', style: TextStyle(color: Colors.grey, fontSize: 14)),
                             RichText(
-                              text: const TextSpan(
-                                style: TextStyle(color: Colors.black, fontSize: 14),
+                              text: TextSpan(
+                                style: const TextStyle(color: Colors.black, fontSize: 14),
                                 children: [
-                                  TextSpan(text: '4j 3m ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  TextSpan(text: '/ 8j', style: TextStyle(color: Colors.grey)),
+                                  TextSpan(text: '$workingHoursStr ', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  TextSpan(text: '/ $expectedHoursStr', style: const TextStyle(color: Colors.grey)),
                                 ],
                               ),
                             ),
@@ -455,7 +521,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
-                            value: 0.5,
+                            value: progress,
                             backgroundColor: Colors.grey[200],
                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
                             minHeight: 8,

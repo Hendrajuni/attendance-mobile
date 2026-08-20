@@ -16,5 +16,9 @@ class DailyContext {
 
   late String shiftName;
 
+  late String shiftIn;
+
+  late String shiftOut;
+
   late String employeeName;
 }

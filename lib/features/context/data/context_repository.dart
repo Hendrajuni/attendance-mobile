@@ -25,7 +25,9 @@ class ContextRepository {
           ..allowedLat = geofence['latitude']?.toDouble() ?? 0.0
           ..allowedLng = geofence['longitude']?.toDouble() ?? 0.0
           ..radius = geofence['allowed_radius']?.toDouble() ?? 1500.0
-          ..shiftName = data['shift'] ?? 'Pagi'
+          ..shiftName = data['shift'] ?? 'Tidak Ada Jadwal'
+          ..shiftIn = data['shift_in'] ?? '08:00'
+          ..shiftOut = data['shift_out'] ?? '16:00'
           ..employeeName = data['name'] ?? 'Unknown';
 
         final isar = _localDbService.isar;
