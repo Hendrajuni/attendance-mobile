@@ -9,7 +9,8 @@ class ApiClient {
       : _secureStorageService = secureStorageService ?? SecureStorageService() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:8000', // 10.0.2.2 maps to host's localhost in Android Emulator
+        // baseUrl: 'http://10.0.2.2:8000', // Localhost Android Emulator
+        baseUrl: 'https://hr.pmgcloud.my.id', // Production VPS
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         headers: {

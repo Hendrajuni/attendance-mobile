@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/services/secure_storage_service.dart';
 
@@ -21,17 +22,23 @@ class AuthRepository {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        // Backend custom endpoint returns {"token": "eyJhb..."}
         if (data != null && data['token'] != null) {
           await _secureStorageService.saveToken(data['token']);
         } else {
-          throw Exception('Token not found in response');
+          throw 'Token tidak ditemukan dari server';
         }
-      } else {
-        throw Exception('Login failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to login: $e');
+      if (e is DioException) {
+        if (e.response?.data is Map && e.response!.data.containsKey('detail')) {
+          throw e.response!.data['detail']; // Extract message from Django
+        }
+        if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+           throw 'Koneksi ke server terputus (Timeout). Coba lagi.';
+        }
+        throw 'Gagal terhubung ke server (Kode: ${e.response?.statusCode ?? "Unknown"}).';
+      }
+      throw 'Terjadi kesalahan tidak terduga.';
     }
   }
 }
