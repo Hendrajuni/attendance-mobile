@@ -10,8 +10,10 @@ import '../../../attendance/data/attendance_repository.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../core/services/secure_storage_service.dart';
-import '../../../../core/services/sync_service.dart';
 import '../../../../core/database/local_db_service.dart';
+import '../../../sync/presentation/bloc/sync_bloc.dart';
+import '../../../sync/presentation/bloc/sync_event.dart';
+import '../../../sync/presentation/bloc/sync_state.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -35,10 +37,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> _fetchLocalData() async {
     final repo = AttendanceRepository();
-    final syncService = SyncService();
     
     final todayLogs = await repo.getTodayLogs();
-    final count = await syncService.getUnsyncedCount();
+    final unsyncedLogs = await repo.getUnsyncedLogs();
+    final count = unsyncedLogs.length;
     
     String inTime = '--:--';
     String outTime = '--:--';
@@ -467,41 +469,74 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
 
             // Notifikasi Sinkronisasi (Merah = Offline/Ada data, Hijau = Online/Sinkron)
-            Container(
-              margin: const EdgeInsets.all(24),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: hasOfflineData ? Colors.red.withOpacity(0.1) : Colors.green.withOpacity(0.1),
-                border: Border.all(color: hasOfflineData ? Colors.red : Colors.green),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    hasOfflineData ? Icons.cloud_off : Icons.cloud_done, 
-                    color: hasOfflineData ? Colors.red : Colors.green
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      hasOfflineData ? 'Offline: $_unsyncedCount Absensi menunggu sinkron' : 'Online: Semua data tersinkronisasi',
-                      style: TextStyle(
-                        color: hasOfflineData ? Colors.red : Colors.green,
-                        fontWeight: FontWeight.bold
-                      ),
+            BlocConsumer<SyncBloc, SyncState>(
+              listener: (context, syncState) {
+                if (syncState is SyncSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Berhasil menyinkronkan ${syncState.count} data!'), backgroundColor: Colors.green),
+                  );
+                  _fetchLocalData(); // Refresh UI to show 0 unsynced
+                }
+              },
+              builder: (context, syncState) {
+                bool isSyncing = syncState is SyncInProgress;
+                bool syncFailed = syncState is SyncFailure;
+                
+                // Jika sedang sync atau gagal sync, override warna
+                Color bannerColor = hasOfflineData ? Colors.red : Colors.green;
+                IconData bannerIcon = hasOfflineData ? Icons.cloud_off : Icons.cloud_done;
+                String bannerText = hasOfflineData 
+                    ? 'Offline: $_unsyncedCount Absensi menunggu sinkron' 
+                    : 'Online: Semua data tersinkronisasi';
+
+                if (syncFailed) {
+                  bannerColor = Colors.orange;
+                  bannerIcon = Icons.error_outline;
+                  bannerText = 'Gagal sinkronisasi. Tap untuk coba lagi.';
+                }
+
+                return GestureDetector(
+                  onTap: hasOfflineData && !isSyncing ? () {
+                    context.read<SyncBloc>().add(SyncDataRequested());
+                  } : null,
+                  child: Container(
+                    margin: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: bannerColor.withOpacity(0.1),
+                      border: Border.all(color: bannerColor),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        if (isSyncing)
+                          const SizedBox(
+                            width: 24, 
+                            height: 24, 
+                            child: CircularProgressIndicator(strokeWidth: 2)
+                          )
+                        else
+                          Icon(bannerIcon, color: bannerColor),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            isSyncing ? 'Menyinkronkan data...' : bannerText,
+                            style: TextStyle(
+                              color: bannerColor,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ),
+                        if (hasOfflineData && !isSyncing && !syncFailed)
+                          const Text(
+                            'Sinkron', 
+                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)
+                          ),
+                      ],
                     ),
                   ),
-                  if (hasOfflineData)
-                    TextButton(
-                      onPressed: () async {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Menyinkronkan data...')));
-                        await SyncService().syncOfflineData();
-                        await _fetchLocalData();
-                      }, 
-                      child: const Text('Sinkron', style: TextStyle(color: Colors.red))
-                    ),
-                ],
-              ),
+                );
+              }
             ),
             
             // Menu Grid

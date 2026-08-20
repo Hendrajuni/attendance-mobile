@@ -6,6 +6,7 @@ import '../bloc/auth_state.dart';
 
 import '../../../context/presentation/pages/dashboard_page.dart';
 import '../../../context/presentation/bloc/context_bloc.dart';
+import '../../../sync/presentation/bloc/sync_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -41,8 +42,11 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (_) => ContextBloc(),
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider(create: (_) => ContextBloc()),
+                        BlocProvider(create: (_) => SyncBloc()),
+                      ],
                       child: const DashboardPage(),
                     ),
                   ),
