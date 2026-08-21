@@ -22,91 +22,6 @@ class DashboardPage extends StatefulWidget {
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 
-  Widget _buildAttendanceStatus(ContextSuccess state, String displayClockIn, String displayClockOut, bool isLate) {
-    bool is5x = state.contextData.validButtons.contains('ISTIRAHAT');
-    
-    if (is5x) {
-      return Column(
-        children: [
-          _buildTimelineRow('Masuk', displayClockIn, isLate ? Colors.red : Colors.green),
-          _buildTimelineRow('CP 1', state.contextData.serverCp1 ?? '--:--', Colors.blue),
-          _buildTimelineRow('Istirahat', state.contextData.serverIstirahat ?? '--:--', Colors.orange),
-          _buildTimelineRow('CP 2', state.contextData.serverCp2 ?? '--:--', Colors.blue),
-          _buildTimelineRow('Pulang', displayClockOut, Colors.green),
-        ],
-      );
-    } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Clock In
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Clock In', style: TextStyle(color: Colors.grey, fontSize: 14)),
-              const SizedBox(height: 4),
-              Text(displayClockIn, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: displayClockIn == '--:--' ? Colors.grey.withOpacity(0.1) : (isLate ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2)),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(displayClockIn == '--:--' ? 'Belum Absen' : (isLate ? 'Telat' : 'Tercatat'), style: TextStyle(color: displayClockIn == '--:--' ? Colors.grey : (isLate ? Colors.red : Colors.green), fontSize: 12, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-          // Clock Out
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Clock Out', style: TextStyle(color: Colors.grey, fontSize: 14)),
-              const SizedBox(height: 4),
-              Text(displayClockOut, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: displayClockOut == '--:--' ? Colors.grey.withOpacity(0.1) : Colors.green.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(displayClockOut == '--:--' ? 'Belum Absen' : 'Tercatat', style: TextStyle(color: displayClockOut == '--:--' ? Colors.grey : Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        ],
-      );
-    }
-  }
-
-  Widget _buildTimelineRow(String label, String time, Color activeColor) {
-    bool isRecorded = time != '--:--';
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-          Row(
-            children: [
-              Text(time, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isRecorded ? activeColor.withOpacity(0.2) : Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(isRecorded ? 'Tercatat' : 'Belum', style: TextStyle(color: isRecorded ? activeColor : Colors.grey, fontSize: 10, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _DashboardPageState extends State<DashboardPage> {
@@ -541,79 +456,46 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         const SizedBox(height: 24),
                         
-                        // Card Body (Clock In / Out)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Clock In
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Clock In', style: TextStyle(color: Colors.grey, fontSize: 14)),
-                                const SizedBox(height: 4),
-                                Text(displayClockIn, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-                                const SizedBox(height: 4),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: displayClockIn == '--:--' ? Colors.grey.withOpacity(0.1) : (isLate ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2)),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(displayClockIn == '--:--' ? 'Belum Absen' : (isLate ? 'Telat' : 'Tercatat'), style: TextStyle(color: displayClockIn == '--:--' ? Colors.grey : (isLate ? Colors.red : Colors.green), fontSize: 12, fontWeight: FontWeight.bold)),
-                                  ),
-                              ],
-                            ),
-                            // Clock Out
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Clock Out', style: TextStyle(color: Colors.grey, fontSize: 14)),
-                                const SizedBox(height: 4),
-                                Text(displayClockOut, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: displayClockOut == '--:--' ? Colors.grey.withOpacity(0.1) : Colors.green.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(displayClockOut == '--:--' ? 'Belum Absen' : 'Tercatat', style: TextStyle(color: displayClockOut == '--:--' ? Colors.grey : Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
-                                ),
-                              ],
-                            ),
-                            // Action Button
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => BlocProvider(
-                                      create: (_) => AttendanceBloc(),
-                                      child: const AttendancePage(),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 65,
-                                height: 65,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF42A5F5), Color(0xFF1565C0)],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
-                                  ],
-                                ),
-                                child: const Icon(Icons.face_retouching_natural, color: Colors.white, size: 36),
+                        // Card Body (Clock In / Out atau 5x Absen)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: _buildAttendanceStatus(state, displayClockIn, displayClockOut, isLate),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(width: 16),
+                              // Action Button
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => BlocProvider(
+                                        create: (_) => AttendanceBloc(),
+                                        child: const AttendancePage(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 65,
+                                  height: 65,
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF42A5F5), Color(0xFF1565C0)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                                    ],
+                                  ),
+                                  child: const Icon(Icons.face_retouching_natural, color: Colors.white, size: 36),
+                                ),
+                              ),
+                            ],
+                          ),
                         
                         const SizedBox(height: 24),
                         // Progress Bar
