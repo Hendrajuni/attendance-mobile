@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/attendance_bloc.dart';
 import '../bloc/attendance_event.dart';
 import '../bloc/attendance_state.dart';
-import '../../../core/local/local_db_service.dart';
-import '../../context/data/daily_context_model.dart';
+import '../../../../core/database/local_db_service.dart';
+import '../../../context/data/daily_context_model.dart';
 
 class AttendancePage extends StatefulWidget {
   const AttendancePage({super.key});
@@ -161,7 +161,7 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget _buildActionButtons(AttendanceState state) {
     List<String> validButtons = ['CLOCK_IN', 'CLOCK_OUT'];
     try {
-      final isar = LocalDbService().isar;
+      final isar = LocalDbService.instance.isar;
       final dailyContext = isar.dailyContexts.getSync(1);
       if (dailyContext != null && dailyContext.validButtons.isNotEmpty) {
         validButtons = dailyContext.validButtons;

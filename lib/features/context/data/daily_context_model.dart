@@ -23,6 +23,9 @@ class DailyContext {
   String? serverClockIn;
 
   String? serverClockOut;
+  String? serverCp1;
+  String? serverIstirahat;
+  String? serverCp2;
 
   late String employeeName;
 

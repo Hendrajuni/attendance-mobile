@@ -30,6 +30,9 @@ class ContextRepository {
           ..shiftOut = data['shift_out'] ?? '16:00'
           ..serverClockIn = data['today_clock_in']
           ..serverClockOut = data['today_clock_out']
+          ..serverCp1 = data['today_cp1']
+          ..serverIstirahat = data['today_istirahat']
+          ..serverCp2 = data['today_cp2']
           ..employeeName = data['name'] ?? 'Unknown'
           ..validButtons = (data['valid_buttons'] as List<dynamic>?)
               ?.map((e) => e['category'] as String)
