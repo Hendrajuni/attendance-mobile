@@ -134,40 +134,66 @@ class _DashboardPageState extends State<DashboardPage> {
               _buildNavItem(icon: Icons.home, label: 'Beranda', index: 0),
               _buildNavItem(icon: Icons.history, label: 'Riwayat', index: 1),
               
-              // Tombol Tengah (Absensi)
+              // Tombol Tengah (Sinkron)
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => AttendanceBloc(),
-                        child: const AttendancePage(),
-                      ),
-                    ),
-                  );
+                   if (_unsyncedCount > 0) {
+                     context.read<SyncBloc>().add(SyncDataRequested());
+                   } else {
+                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semua data sudah tersinkronisasi')));
+                   }
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Transform.translate(
                       offset: const Offset(0, -15),
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1976D2), // Warna Biru seperti gambar
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
-                          ],
-                        ),
-                        child: const Icon(Icons.face_retouching_natural, color: Colors.white, size: 32),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: _unsyncedCount > 0 ? Colors.red : const Color(0xFF1976D2),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (_unsyncedCount > 0 ? Colors.red : Colors.blue).withOpacity(0.3), 
+                                  blurRadius: 8, 
+                                  offset: const Offset(0, 4)
+                                ),
+                              ],
+                            ),
+                            child: const Icon(Icons.cloud_sync, color: Colors.white, size: 32),
+                          ),
+                          if (_unsyncedCount > 0)
+                            Positioned(
+                              right: -5,
+                              top: -5,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                                ),
+                                child: Text(
+                                  '$_unsyncedCount',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     Transform.translate(
                       offset: const Offset(0, -8),
-                      child: const Text('Absensi', style: TextStyle(color: Color(0xFF1976D2), fontWeight: FontWeight.bold, fontSize: 12)),
+                      child: Text('Sinkron', style: TextStyle(color: _unsyncedCount > 0 ? Colors.red : const Color(0xFF1976D2), fontWeight: FontWeight.bold, fontSize: 12)),
                     ),
                   ],
                 ),

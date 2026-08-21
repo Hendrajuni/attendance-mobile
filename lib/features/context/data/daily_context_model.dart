@@ -25,4 +25,6 @@ class DailyContext {
   String? serverClockOut;
 
   late String employeeName;
+
+  List<String> validButtons = [];
 }

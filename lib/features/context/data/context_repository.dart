@@ -30,7 +30,10 @@ class ContextRepository {
           ..shiftOut = data['shift_out'] ?? '16:00'
           ..serverClockIn = data['today_clock_in']
           ..serverClockOut = data['today_clock_out']
-          ..employeeName = data['name'] ?? 'Unknown';
+          ..employeeName = data['name'] ?? 'Unknown'
+          ..validButtons = (data['valid_buttons'] as List<dynamic>?)
+              ?.map((e) => e['category'] as String)
+              .toList() ?? [];
 
         final isar = _localDbService.isar;
         

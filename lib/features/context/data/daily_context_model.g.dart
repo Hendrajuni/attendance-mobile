@@ -66,6 +66,11 @@ const DailyContextSchema = CollectionSchema(
       id: 9,
       name: r'shiftOut',
       type: IsarType.string,
+    ),
+    r'validButtons': PropertySchema(
+      id: 10,
+      name: r'validButtons',
+      type: IsarType.stringList,
     )
   },
   estimateSize: _dailyContextEstimateSize,
@@ -104,6 +109,13 @@ int _dailyContextEstimateSize(
   bytesCount += 3 + object.shiftIn.length * 3;
   bytesCount += 3 + object.shiftName.length * 3;
   bytesCount += 3 + object.shiftOut.length * 3;
+  bytesCount += 3 + object.validButtons.length * 3;
+  {
+    for (var i = 0; i < object.validButtons.length; i++) {
+      final value = object.validButtons[i];
+      bytesCount += value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -123,6 +135,7 @@ void _dailyContextSerialize(
   writer.writeString(offsets[7], object.shiftIn);
   writer.writeString(offsets[8], object.shiftName);
   writer.writeString(offsets[9], object.shiftOut);
+  writer.writeStringList(offsets[10], object.validButtons);
 }
 
 DailyContext _dailyContextDeserialize(
@@ -143,6 +156,7 @@ DailyContext _dailyContextDeserialize(
   object.shiftIn = reader.readString(offsets[7]);
   object.shiftName = reader.readString(offsets[8]);
   object.shiftOut = reader.readString(offsets[9]);
+  object.validButtons = reader.readStringList(offsets[10]) ?? [];
   return object;
 }
 
@@ -173,6 +187,8 @@ P _dailyContextDeserializeProp<P>(
       return (reader.readString(offset)) as P;
     case 9:
       return (reader.readString(offset)) as P;
+    case 10:
+      return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1426,6 +1442,231 @@ extension DailyContextQueryFilter
       ));
     });
   }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'validButtons',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'validButtons',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'validButtons',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'validButtons',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'validButtons',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'validButtons',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'validButtons',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'validButtons',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'validButtons',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'validButtons',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'validButtons',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'validButtons',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'validButtons',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'validButtons',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'validButtons',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<DailyContext, DailyContext, QAfterFilterCondition>
+      validButtonsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'validButtons',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
 }
 
 extension DailyContextQueryObject
@@ -1773,6 +2014,12 @@ extension DailyContextQueryWhereDistinct
       return query.addDistinctBy(r'shiftOut', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<DailyContext, DailyContext, QDistinct> distinctByValidButtons() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'validButtons');
+    });
+  }
 }
 
 extension DailyContextQueryProperty
@@ -1842,6 +2089,13 @@ extension DailyContextQueryProperty
   QueryBuilder<DailyContext, String, QQueryOperations> shiftOutProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'shiftOut');
+    });
+  }
+
+  QueryBuilder<DailyContext, List<String>, QQueryOperations>
+      validButtonsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'validButtons');
     });
   }
 }

@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/attendance_bloc.dart';
 import '../bloc/attendance_event.dart';
 import '../bloc/attendance_state.dart';
+import '../../../core/local/local_db_service.dart';
+import '../../context/data/daily_context_model.dart';
 
 class AttendancePage extends StatefulWidget {
   const AttendancePage({super.key});
@@ -139,23 +141,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: state is AttendanceLoading
-                            ? null
-                            : () => _submitAttendance('MASUK'),
-                        child: const Text('Absen Masuk (IN)'),
-                      ),
-                      ElevatedButton(
-                        onPressed: state is AttendanceLoading
-                            ? null
-                            : () => _submitAttendance('PULANG'),
-                        child: const Text('Absen Pulang (OUT)'),
-                      ),
-                    ],
-                  ),
+                  child: _buildActionButtons(state),
                 ),
               ),
 
@@ -170,6 +156,54 @@ class _AttendancePageState extends State<AttendancePage> {
           );
         },
       ),
+    );
+  }
+  Widget _buildActionButtons(AttendanceState state) {
+    List<String> validButtons = ['CLOCK_IN', 'CLOCK_OUT'];
+    try {
+      final isar = LocalDbService().isar;
+      final dailyContext = isar.dailyContexts.getSync(1);
+      if (dailyContext != null && dailyContext.validButtons.isNotEmpty) {
+        validButtons = dailyContext.validButtons;
+      }
+    } catch (e) {
+      debugPrint("Error reading validButtons from Isar: $e");
+    }
+
+    // Map each category to a display name and color
+    Map<String, Map<String, dynamic>> btnConfig = {
+      'CLOCK_IN': {'label': 'Masuk (IN)', 'color': Colors.blue},
+      'CHECKPOINT_1': {'label': 'CP 1', 'color': Colors.purple},
+      'ISTIRAHAT': {'label': 'Istirahat', 'color': Colors.orange},
+      'CHECKPOINT_2': {'label': 'CP 2', 'color': Colors.purple},
+      'CLOCK_OUT': {'label': 'Pulang (OUT)', 'color': Colors.teal},
+    };
+
+    return Wrap(
+      spacing: 12.0,
+      runSpacing: 12.0,
+      alignment: WrapAlignment.center,
+      children: validButtons.map((serverCategory) {
+        String submitCategory = serverCategory;
+        if (serverCategory == 'CLOCK_IN') submitCategory = 'MASUK';
+        if (serverCategory == 'CLOCK_OUT') submitCategory = 'PULANG';
+
+        final config = btnConfig[serverCategory] ?? {'label': serverCategory, 'color': Colors.grey};
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: config['color'],
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: state is AttendanceLoading
+              ? null
+              : () => _submitAttendance(submitCategory),
+          child: Text(config['label'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        );
+      }).toList(),
     );
   }
 }
